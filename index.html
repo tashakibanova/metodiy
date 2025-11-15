@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Методий — генератор материалов</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Методий — рабочая программа по УТП</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -19,237 +16,126 @@
     }
     .app {
       width: 100%;
-      max-width: 960px;
+      max-width: 720px;
       background: #020617;
-      border-radius: 24px;
+      border-radius: 20px;
       padding: 24px 24px 32px;
       box-shadow: 0 20px 45px rgba(0,0,0,0.6);
       border: 1px solid #1e293b;
     }
     h1 {
       margin: 0 0 8px;
-      font-size: 24px;
+      font-size: 22px;
     }
     .subtitle {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       color: #9ca3af;
       font-size: 14px;
     }
     label {
       display: block;
-      font-size: 14px;
       margin-bottom: 6px;
+      font-size: 14px;
       color: #d1d5db;
     }
     input[type="text"], select, textarea {
       width: 100%;
       padding: 10px 12px;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px solid #374151;
       background: #020617;
       color: #e5e7eb;
       font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      margin-bottom: 14px;
+      box-sizing: border-box;
     }
-    input[type="text"]:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 1px rgba(56,189,248,0.6);
-    }
-    textarea {
-      min-height: 220px;
-      resize: vertical;
-      white-space: pre-wrap;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .field {
-      margin-bottom: 16px;
-    }
-    .btn-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
+    input[type="file"] {
+      margin-bottom: 18px;
+      font-size: 14px;
     }
     button {
       border: none;
       border-radius: 999px;
-      padding: 10px 20px;
+      padding: 10px 22px;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       background: linear-gradient(135deg, #22c55e, #14b8a6);
       color: #022c22;
       box-shadow: 0 10px 25px rgba(34,197,94,0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
-    button:disabled {
-      opacity: 0.6;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-    button:not(:disabled):hover {
+    button:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 30px rgba(34,197,94,0.45);
     }
-    .status {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-    .status.error {
-      color: #fca5a5;
-    }
-    .status.success {
-      color: #bbf7d0;
-    }
-    .footer-note {
-      margin-top: 12px;
-      font-size: 11px;
-      color: #6b7280;
-    }
-    .small {
+    .note {
+      margin-top: 10px;
       font-size: 12px;
       color: #6b7280;
-      margin-top: 4px;
-    }
-    @media (max-width: 640px) {
-      .app {
-        padding: 16px 16px 24px;
-        border-radius: 18px;
-      }
     }
   </style>
 </head>
 <body>
+
 <div class="app">
-  <h1>Методий — генератор методических материалов</h1>
+  <h1>Методий — генерация рабочей программы</h1>
   <div class="subtitle">
-    Заполните поля ниже и нажмите «Сгенерировать». Запрос уйдёт в n8n-workflow через Webhook, а результат появится в поле ответа.
+    Введите тему, выберите уровень образования и загрузите УТП. После отправки вы получите
+    сгенерированную рабочую программу прямо на этой странице.
   </div>
 
-  <form id="methodic-form">
-    <div class="grid">
-      <div class="field">
-        <label for="topic">Тема</label>
-        <input id="topic" name="topic" type="text" placeholder="Например: Развитие речи в 1 классе" required />
-        <div class="small">Это пойдёт в поле <code>topic</code> на вход ноды <em>Build Payload</em>.</div>
-      </div>
-      <div class="field">
-        <label for="level">Уровень / класс</label>
-        <input id="level" name="level" type="text" placeholder="Например: 1 класс" required />
-        <div class="small">Поле <code>level</code> — как в твоём JavaScript: <code>const level = $json.level;</code></div>
-      </div>
-      <div class="field">
-        <label for="type">Вид методического материала</label>
-        <select id="type" name="type" required>
-          <option value="">Выберите вариант…</option>
-          <option>Сценарий занятия</option>
-          <option>Рабочий лист</option>
-          <option>Чек-лист для педагога</option>
-        </select>
-        <div class="small">Это поле <code>type</code>, которое у тебя участвует в <code>switch (type)</code>.</div>
-      </div>
-    </div>
+  <!-- ⚠️ СЮДА ПОДСТАВЬ СВОЙ URL WEBHOOK'A -->
+  <!-- для тестов: https://.../webhook-test/имя-пути
+       для боевого: https://.../webhook/имя-пути -->
 
-    <div class="btn-row">
-      <button type="submit" id="submit-btn">
-        <span>🚀 Сгенерировать</span>
-      </button>
-      <div class="status" id="status-text">Ожидаю запроса…</div>
+  
+  <form
+    action="https://edsyteam.app.n8n.cloud/webhook-test/metodiy-kibanova"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <label for="topic">Тема рабочей программы</label>
+    <input
+      id="topic"
+      name="topic"
+      type="text"
+      placeholder="Например: Развитие речи у детей 5–6 лет"
+      required
+    />
+
+    <label for="level">Уровень образования</label>
+    <select id="level" name="level" required>
+      <option value="">Выберите уровень…</option>
+      <option value="Дошкольное образование">Дошкольное образование</option>
+      <option value="1–4 классы">1–4 классы</option>
+      <option value="5–9 классы">5–9 классы</option>
+      <option value="10–11 классы">10–11 классы</option>
+    </select>
+
+    <label for="utp">Учебно-тематический план (УТП)</label>
+    <input
+      id="utp"
+      name="utp"
+      type="file"
+      accept=".xlsx,.xls,.docx,.doc,.pdf"
+      required
+    />
+
+    <label for="comments">Пожелания / комментарии (необязательно)</label>
+    <textarea
+      id="comments"
+      name="comments"
+      placeholder="Например: сделать акцент на формировании метапредметных результатов..."
+    ></textarea>
+
+    <button type="submit">Сгенерировать рабочую программу</button>
+
+    <div class="note">
+      После отправки страница обновится и вместо неё отобразится ответ от системы (текст рабочей программы).
     </div>
   </form>
-
-  <div class="field">
-    <label for="result">Результат (ответ от n8n / LLM)</label>
-    <textarea id="result" readonly placeholder="Здесь появится сгенерированный материал…"></textarea>
-  </div>
-
-  <div class="footer-note">
-    Под капотом: GitHub Pages → Webhook (POST) → n8n workflow → OpenAI → Respond to Webhook → ответ на эту страницу.
-  </div>
 </div>
 
-<script>
-  // ⚠️ ВАЖНО: сюда подставь свой URL вебхука.
-  // Для тестов — Test URL (…/webhook-test/metodiy-kibanova),
-  // для боевой версии — Production URL (…/webhook/metodiy-kibanova).
-  const WEBHOOK_URL = "https://edsyteam.app.n8n.cloud/webhook-test/metodiy-kibanova";
-
-  const form = document.getElementById("methodic-form");
-  const statusText = document.getElementById("status-text");
-  const resultArea = document.getElementById("result");
-  const submitBtn = document.getElementById("submit-btn");
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const topic = document.getElementById("topic").value.trim();
-    const level = document.getElementById("level").value.trim();
-    const type = document.getElementById("type").value;
-
-    if (!topic || !level || !type) {
-      statusText.textContent = "Заполните все поля перед отправкой.";
-      statusText.className = "status error";
-      return;
-    }
-
-    const payload = {
-      topic,
-      level,
-      type
-      // здесь можно добавить другие поля, если они нужны твоему Build Payload
-    };
-
-    submitBtn.disabled = true;
-    statusText.textContent = "Отправляю запрос в n8n…";
-    statusText.className = "status";
-
-    try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const contentType = response.headers.get("content-type") || "";
-      let data;
-
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-        resultArea.value = JSON.stringify(data, null, 2);
-      } else {
-        data = await response.text();
-        resultArea.value = data;
-      }
-
-      if (!response.ok) {
-        statusText.textContent = "Ошибка от сервера n8n (см. текст выше).";
-        statusText.className = "status error";
-      } else {
-        statusText.textContent = "Готово! Ответ получен.";
-        statusText.className = "status success";
-      }
-    } catch (error) {
-      console.error(error);
-      statusText.textContent = "Не удалось отправить запрос. Проверь URL вебхука и доступность n8n.";
-      statusText.className = "status error";
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
-</script>
 </body>
 </html>
